@@ -46,7 +46,8 @@ def home():
         "message": "Brainrot Leaderboard API is running",
         "endpoints": [
             "/api/save - сохранить результат",
-            "/api/leaderboard - получить топ"
+            "/api/leaderboard - получить топ",
+            "/api/player/<id> - получить игрока"
         ]
     })
 
@@ -132,9 +133,6 @@ def get_leaderboard():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Вызываем создание таблицы при импорте (для gunicorn)
-init_db()
-
 @app.route('/api/player/<int:user_id>', methods=['GET'])
 def get_player(user_id):
     """Получить данные конкретного игрока"""
@@ -169,4 +167,5 @@ def get_player(user_id):
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', port=8080)
