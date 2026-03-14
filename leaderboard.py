@@ -132,6 +132,8 @@ def get_leaderboard():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Вызываем создание таблицы при импорте (для gunicorn)
+init_db()
+
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=8080)
