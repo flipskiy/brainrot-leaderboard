@@ -135,5 +135,38 @@ def get_leaderboard():
 # Вызываем создание таблицы при импорте (для gunicorn)
 init_db()
 
+@app.route('/api/player/<int:user_id>', methods=['GET'])
+def get_player(user_id):
+    """Получить данные конкретного игрока"""
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        cur.execute('''
+            SELECT user_id, username, first_name, last_name, total_clicks, balance, level, prestige
+            FROM players
+            WHERE user_id = %s
+        ''', (user_id,))
+        
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if row:
+            return jsonify({
+                'user_id': row[0],
+                'username': row[1] or row[2] or 'Игрок',
+                'first_name': row[2],
+                'last_name': row[3],
+                'total_clicks': row[4],
+                'balance': row[5],
+                'level': row[6],
+                'prestige': row[7]
+            })
+        else:
+            return jsonify({'error': 'Player not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
